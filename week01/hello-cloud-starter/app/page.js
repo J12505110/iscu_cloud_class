@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const MAX_URL_LENGTH = 64;
+const MAX_URL_LENGTH = 2048;
 
 function validateUrl(value) {
   const trimmedUrl = value.trim();
