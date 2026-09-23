@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
+import { saveUrl } from "../../../lib/db";
 
 export const runtime = "nodejs";
 
@@ -64,8 +65,12 @@ export async function POST(request) {
       );
     }
 
-    // 5. shortCode 생성 & JSON 응답 반환
+    // 5. shortCode 생성 및 DB 저장
     const shortCode = createShortCode(originalUrl);
+    
+    // DB 저장
+    await saveUrl(shortCode, originalUrl);
+
     const baseUrl = new URL(request.url).origin;
 
     return NextResponse.json(
@@ -76,7 +81,8 @@ export async function POST(request) {
       },
       { status: 201 }
     );
-  } catch {
+  } catch (error) {
+    console.error("Shorten API Error:", error);
     return NextResponse.json(
       { error: { code: "INTERNAL_ERROR", message: "Failed to create short URL." } },
       { status: 500 }
