@@ -2,15 +2,15 @@ import { neon } from "@neondatabase/serverless";
 
 const sql = neon(process.env.DATABASE_URL);
 
-// 1. URL 신규 저장 (Dual Write 유지: 롤백 호환성을 위해 두 컬럼 모두 저장)
+// 1. URL 신규 저장 (Contract 단계: destination_url만 저장)
 export async function saveUrl(shortCode, originalUrl) {
   await sql`
-    INSERT INTO urls (short_code, original_url, destination_url)
-    VALUES (${shortCode}, ${originalUrl}, ${originalUrl})
+    INSERT INTO urls (short_code, destination_url)
+    VALUES (${shortCode}, ${originalUrl})
   `;
 }
 
-// 2. shortCode로 원본 URL 조회 (Migrate: destination_url 읽기로 전환)
+// 2. shortCode로 원본 URL 조회
 export async function findUrlByShortCode(shortCode) {
   const rows = await sql`
     SELECT destination_url
@@ -22,7 +22,7 @@ export async function findUrlByShortCode(shortCode) {
   return rows?.destination_url ?? null;
 }
 
-// 3. originalUrl로 기존 shortCode 조회 (Migrate: destination_url 읽기로 전환)
+// 3. originalUrl로 기존 shortCode 조회
 export async function findUrlByOriginalUrl(originalUrl) {
   const rows = await sql`
     SELECT short_code
