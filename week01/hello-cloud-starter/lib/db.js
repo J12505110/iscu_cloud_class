@@ -10,7 +10,7 @@ export async function saveUrl(shortCode, originalUrl) {
   `;
 }
 
-// 2. shortCode로 원본 URL 조회 (rows 인덱스 확인)
+// 2. shortCode로 원본 URL 조회 (rows[0] 인덱스 필수)
 export async function findUrlByShortCode(shortCode) {
   const rows = await sql`
     SELECT destination_url
@@ -19,10 +19,10 @@ export async function findUrlByShortCode(shortCode) {
     LIMIT 1
   `;
 
-  return rows?.destination_url ?? null; // rows 필수
+  return rows[0]?.destination_url ?? null;
 }
 
-// 3. originalUrl로 기존 shortCode 조회 (rows 인덱스 확인)
+// 3. originalUrl로 기존 shortCode 조회 (rows[0] 인덱스 필수)
 export async function findUrlByOriginalUrl(originalUrl) {
   const rows = await sql`
     SELECT short_code
@@ -31,5 +31,5 @@ export async function findUrlByOriginalUrl(originalUrl) {
     LIMIT 1
   `;
 
-  return rows?.short_code ?? null; // rows 필수
+  return rows[0]?.short_code ?? null;
 }
