@@ -23,7 +23,7 @@ export async function getSummaryStats() {
     FROM urls
   `;
 
-  const row = rows[0];
+  const row = rows[0]; // [0] 인덱스 필수
 
   return {
     totalUrls: Number(row.total_urls),
@@ -37,7 +37,7 @@ export async function getTopUrl() {
   const rows = await sql`
     SELECT
       short_code,
-      destination_url, -- original_url에서 변경
+      destination_url,
       click_count
     FROM urls
     WHERE click_count > 0
@@ -45,7 +45,7 @@ export async function getTopUrl() {
     LIMIT 1
   `;
 
-  const row = rows[0];
+  const row = rows[0]; // [0] 인덱스 필수
 
   if (!row) {
     return null;
@@ -53,7 +53,7 @@ export async function getTopUrl() {
 
   return {
     shortCode: row.short_code,
-    originalUrl: row.destination_url, -- row.destination_url로 변경
+    originalUrl: row.destination_url,
     clickCount: Number(row.click_count),
   };
 }
@@ -63,7 +63,7 @@ export async function getUrlStats() {
   const rows = await sql`
     SELECT
       short_code,
-      destination_url, -- original_url에서 변경
+      destination_url,
       click_count,
       created_at,
       last_clicked_at
@@ -74,7 +74,7 @@ export async function getUrlStats() {
 
   return rows.map((row) => ({
     shortCode: row.short_code,
-    originalUrl: row.destination_url, -- row.destination_url로 변경
+    originalUrl: row.destination_url,
     clickCount: Number(row.click_count),
     createdAt: row.created_at,
     lastClickedAt: row.last_clicked_at,
